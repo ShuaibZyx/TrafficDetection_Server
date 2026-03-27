@@ -1,0 +1,17 @@
+app:
+  host: "127.0.0.1"
+  port: 8000
+
+detect:
+  conf_thresh: 0.6
+  class_names: ["汽车", "三轮车", "面包车", "公交车", "骑电动车的人", "骑自行车的人", "行人"]
+  
+  # video
+  sample_rate: 5
+  target_fps: 60
+
+  # frame
+  image_sizes: [640, 640]
+  quality: 80
+
+  upload_dir: "upload_videos"

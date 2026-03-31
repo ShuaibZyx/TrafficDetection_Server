@@ -3,11 +3,11 @@ app:
   port: 8000
 
 detect:
-  conf_thresh: 0.6
-  class_names: ["汽车", "三轮车", "面包车", "公交车", "骑电动车的人", "骑自行车的人", "行人"]
+  conf_thresh: 0.95
+  class_names: ["汽车", "面包车", "公交车", "三轮车", "骑电动车的人", "骑自行车的人", "行人"]
   
   # video
-  sample_rate: 5
+  sample_rate: 60
   target_fps: 60
 
   # frame

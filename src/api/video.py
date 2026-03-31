@@ -29,16 +29,19 @@ async def infer_video(websocket: WebSocket, video_id: str):
 
     try:
         for frame in reader:
-            # 模型推理，得到图像级别的标注框结果
-            image_boxes = run_detection(
-                model, frame, image_sizes, conf_thresh, class_names
-            )
-            # 帧图像转为base64
-            image_base64 = encode_image_base64(frame, quality=80)
-            # json序列化
-            result_json = json.dumps({"image": image_base64, "boxes": image_boxes})
-            # 发送结果
-            await websocket.send_text(result_json)
+            if frame is not None:
+                # 模型推理，得到图像级别的标注框结果
+                image_boxes = run_detection(
+                    model, frame, image_sizes, conf_thresh, class_names
+                )
+                # 帧图像转为base64
+                image_base64 = encode_image_base64(frame, quality=80)
+                # json序列化
+                result_json = json.dumps({"image": image_base64, "boxes": image_boxes})
+                # 发送结果
+                await websocket.send_text(result_json)
+            else:
+                break
 
     except WebSocketDisconnect:
         logger.info(f"客户端断开: {video_id}")

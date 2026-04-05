@@ -1,32 +1,37 @@
-from src.utils.image_utils import frame2image, box2image
-from src.utils.common_utils import softmax
+from src.utils.image_utils import frame2image
 import numpy as np
+from torchvision.ops import box_convert
+import torch
 
 
 def postprocess(cls_out, box_out, ow, oh, conf_thresh, class_names):
-    cls_out, box_out = cls_out[0], box_out[0]
-    scores = softmax(cls_out)
+    class_names = np.array(class_names)
 
-    results = []
-    for i in range(box_out.shape[0]):
-        x, y, w, h = box_out[i]
-        bx, by, bw, bh = box2image(x, y, w, h, ow, oh)
+    cls_out = torch.from_numpy(cls_out)
+    box_out = torch.from_numpy(box_out)
+    # process box_out
+    bbox_pred = box_convert(box_out, in_fmt="cxcywh", out_fmt="xyxy")
+    scale = torch.tensor([ow, oh, ow, oh], device=bbox_pred.device)
+    bbox_pred *= scale
 
-        label = np.argmax(scores[i])
-        conf = scores[i][label]
+    # process cls_out
+    scores = torch.sigmoid(cls_out)
+    scores, labels = scores.max(-1)
 
-        if conf > conf_thresh:
-            results.append(
-                {
-                    "x": float(bx),
-                    "y": float(by),
-                    "width": float(bw),
-                    "height": float(bh),
-                    "confidence": round(float(conf), 2),
-                    "type": class_names[int(label)],
-                }
-            )
-    return results
+    # 过滤置信度低于阈值的结果
+    valid_mask = scores > conf_thresh
+    labels = labels[valid_mask].numpy()
+    boxes = bbox_pred[valid_mask].numpy().astype(np.float64).round(2)
+    scores = scores[valid_mask].numpy().astype(np.float64).round(2)
+    # 批量索引中文名
+    names = class_names[labels]
+
+    return dict(
+        labels=labels.tolist(),
+        boxes=boxes.tolist(),
+        scores=scores.tolist(),
+        names=list(names),
+    )
 
 
 def run_detection(session, frame, image_sizes, conf_thresh, class_names):
@@ -44,3 +49,5 @@ def run_detection(session, frame, image_sizes, conf_thresh, class_names):
     # 后处理为需要的输出结果
     result = postprocess(cls_out, box_out, orig_w, orig_h, conf_thresh, class_names)
     return result
+
+

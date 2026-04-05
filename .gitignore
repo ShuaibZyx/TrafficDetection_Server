@@ -1,2 +1,2 @@
-upload_videos/*.mp4
-weight_file/*.onnx
+static
+weight_file

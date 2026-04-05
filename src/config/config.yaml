@@ -1,17 +1,17 @@
 app:
   host: "127.0.0.1"
   port: 8000
+  static: "static"
 
 detect:
-  conf_thresh: 0.95
+  conf_thresh: 0.6
   class_names: ["汽车", "面包车", "公交车", "三轮车", "骑电动车的人", "骑自行车的人", "行人"]
   
   # video
-  sample_rate: 60
-  target_fps: 60
+  sample_rate: 2
 
   # frame
   image_sizes: [640, 640]
   quality: 80
 
-  upload_dir: "upload_videos"
+  upload_dir: "videos"

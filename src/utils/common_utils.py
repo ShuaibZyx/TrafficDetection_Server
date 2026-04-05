@@ -1,11 +1,6 @@
-import numpy as np
-
 import onnxruntime as ort
 from os.path import exists, basename
 
-def softmax(x):
-    e = np.exp(x - np.max(x, axis=-1, keepdims=True))
-    return e / e.sum(axis=-1, keepdims=True)
 
 def load_onnx_model(path, providers):
     if exists(path):

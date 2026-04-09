@@ -21,8 +21,8 @@ def postprocess(cls_out, box_out, ow, oh, conf_thresh, class_names):
     # 过滤置信度低于阈值的结果
     valid_mask = scores > conf_thresh
     labels = labels[valid_mask].numpy()
-    boxes = bbox_pred[valid_mask].numpy().astype(np.float64).round(2)
-    scores = scores[valid_mask].numpy().astype(np.float64).round(2)
+    boxes = bbox_pred[valid_mask].numpy()
+    scores = scores[valid_mask].numpy()
     # 批量索引中文名
     names = class_names[labels]
 
